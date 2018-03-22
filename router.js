@@ -27,7 +27,7 @@
 
         },
 
-        replaceState: (url, replace) => {
+        pushState: function(url, replace) {
             const history = window.history;
 
             try {
@@ -97,26 +97,53 @@
 
         cleanPath: path => {
             return path.replace(/\/\//g, '/');
+        },
+
+        replaceHash: path => {
+            window.location.replace(this.getUrl(path))
+        },
+
+        getUrl: path => {
+            const href = window.location.href;
+            const i = href.indexOf('#');
+            const base = i >= 0 ? href.slice(0, i) : href;
+            return `${base}#${path}`;
+        },
+
+        render: (id, template, callback) => {
+            let dom = document.getElementById(id);
+
+            if (dom) {
+                dom.innerHTML = template;
+                callback();
+            } else {
+                console.error('id未找到');
+            }
         }
     }
 
-    function HTML5History() {}
+    function HTML5History(base) {
+        this.base = base;
+    }
 
     HTML5History.prototype = {
-        init: () => {
-            // window.addEventListener('popstate', e => {
-            //   // 取得 state 中保存的 key
-            //   _key = e.state && e.state.key
-            //   // 保存当前的先
-            //   const current = this.current
-            //   // 调用 transitionTo
-            //   this.transitionTo(getLocation(this.base), next => {
-            //     if (expectScroll) {
-            //       // 处理滚动
-            //       this.handleScroll(next, current, true)
-            //     }
-            //   })
-            // })
+        init: function() {
+            window.addEventListener('popstate', e => {
+                this.listen();
+            });
+
+            // 这里初始化一次路由识别，防止页面刷新后首次无渲染
+            this.listen();
+        },
+
+        listen: function() {
+            let url = window.location.pathname;
+
+            if (_router.hasOwnProperty(url)) {
+                let item = _router[url];
+                item.before();
+                util.render(item.id, item.template, item.after)
+            }
         },
 
         go: index => {
@@ -124,7 +151,12 @@
         },
 
         replace: url => {
-
+            if ('string' === typeof params) {
+                util.pushState(util.cleanPath(this.base + params), true);
+                return;
+            } else {
+                console.warn('请传入正确的值！');
+            }
         },
 
         onReady: (successCallBack, errorCallBack) => {
@@ -135,8 +167,18 @@
 
         },
 
-        push: params => {
+        push: function(params) {
 
+            if ('string' === typeof params) {
+                util.pushState(util.cleanPath(this.base + params))
+                return;
+            }
+
+            if (params.hasOwnProperty('path')) {
+                util.pushState(util.cleanPath(this.base + params.path))
+            } else {
+                console.warn('请传入正确的数据结构');
+            }
         }
     }
 
@@ -165,13 +207,8 @@
             if (_router.hasOwnProperty(url)) {
                 let item = _router[url];
                 item.before();
-                this.render(item.id, item.template, item.after)
+                util.render(item.id, item.template, item.after)
             }
-        },
-
-        render: (id, template, callback) => {
-            document.getElementById(id).innerHTML = template;
-            callback();
         },
 
         go: index => {
@@ -179,7 +216,7 @@
         },
 
         replace: url => {
-            util.replaceState(url, true);
+            util.replaceHash(url);
         },
 
         onReady: (successCallBack, errorCallBack) => {
@@ -214,7 +251,7 @@
             return
         }
 
-        let mode = params.hasOwnProperty('mode') ? params.mode : 'hash';
+        let mode = params.hasOwnProperty('type') ? params.type : 'hash';
 
         this.base = params.hasOwnProperty('base') ? params.base : '/';
         this.routes = params.hasOwnProperty('routes') ? params.routes : [];
@@ -226,7 +263,7 @@
                 break;
 
             case 'history':
-                this.history = new HTML5History(this, this.base);
+                this.history = new HTML5History(this.base);
                 break;
         }
 

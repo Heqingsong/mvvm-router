@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>qs-router</title>
+    <base href="/">
+</head>
+
+<body>
+    <h1>html5History模式</h1>
+    <br/>
+    <a href="/login">login</a>
+    <br/>
+    <a href="/login/name">login/name</a>
+    <br/>
+    <a href="/login/name2">login/name2</a>
+    <br/>
+    <a href="/login/name2/name3">login/name2/name3</a>
+    <br/>
+    <a href="/register">register</a>
+    <br />
+    <button onclick="testPush()">测试代码跳转</button>
+
+    <div id="template"></div>
+    <div id="loginWrap2"></div>
+
+    <script type="text/javascript" src="router.js"></script>
+    <script type="text/javascript">
+        let router = new Router({
+            // base: '/',
+            type: 'history',
+            routes: [{
+                path: '/',
+                component: {
+                    template: `<h1>hello word</h1>`,
+                    beforeRouteUpdate: params => {
+                        console.log('开始执行');
+                    },
+                    afterRouteUpdate: params => {
+                        console.log('执行结束');
+                    }
+                },
+                children: [{
+                    path: 'login',
+                    component: {
+                        template: `<h1>login</h1>`
+                    },
+                    children: [{
+                        path: 'name',
+                        component: {
+                            template: `<h1>main</h1>`
+                        }
+                    }, {
+                        path: 'name2',
+                        component: {
+                            id: 'loginWrap2',
+                            template: `<h1>loginWrap2</h1><div id='loginWrap3'></div>`
+                        },
+                        children: [{
+                            path: 'name3',
+                            component: {
+                                id: 'loginWrap3',
+                                template: `<h1>loginWrap3</h1>`
+                            }
+                        }]
+                    }]
+                }, {
+                    path: 'register',
+                    component: {
+                        template: `<h1>register</h1>`
+                    }
+                }]
+            }]
+        });
+
+        // 字符串
+        router.push('/login');
+
+        function testPush() {
+            // 对象
+            router.push({
+                path: '/login/name'
+            })
+        }
+
+        // TODO 
+        // // 命名的路由
+        // router.push({ name: 'user', params: { userId: 123 }})
+        // // 带查询参数，变成 /register?plan=private
+        // router.push({ path: 'register', query: { plan: 'private' }})
+    </script>
+</body>
+
+</html>

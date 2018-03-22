@@ -1,6 +1,6 @@
 # qs-router
 
-青松router 是一个 基于 url hash 和 html5 history 的一个前端路由小工具
+qs-router 是一个 基于 url hash 和 html5 history 的一个前端路由小轮子
 
 ## 使用方法
 
@@ -66,6 +66,8 @@
                     path: 'name2',
                     component: {
                         id: 'name',
+
+                        // 子渲染模板嵌套
                         template: `<h1>name</h1><div id='name2'></div>`
                     },
                     children: [{
@@ -88,6 +90,7 @@
         }]
     });
 ```
+
 ## 使用js的方式进行跳转
 ```js
 
@@ -104,8 +107,20 @@
 ## 在页面上使用hash的方式跳转
 ```html
     <body>
-        <a href="#/login">login</a>
-        <br/>
-        <a href="#/login/name">login/name</a>
+        <a href="#/main">main</a>
+
+        <a href="#/main/page">main/page</a>
+    </body>
+```
+
+## 在页面上使用html5History的方式跳转
+```html
+    <head>
+        <base href="/">
+    </head>
+    <body>
+        <a href="/main">main</a>
+
+        <a href="/main/page">main/page</a>
     </body>
 ```

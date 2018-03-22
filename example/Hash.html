@@ -6,7 +6,7 @@
 </head>
 
 <body>
-    <h1>router</h1>
+    <h1>hash模式</h1>
     <br/>
     <a href="#/login">login</a>
     <br/>
@@ -23,11 +23,9 @@
     <div id="template"></div>
     <div id="loginWrap2"></div>
 
-    <script src="index.js"></script>
+    <script type="text/javascript" src="../router.js"></script>
     <script type="text/javascript">
         let router = new Router({
-            // base: '/',
-            type: 'history',
             routes: [{
                 path: '/',
                 component: {
@@ -73,12 +71,12 @@
         });
 
         // 字符串
-        router.push('/login');
+        // router.push('/login');
 
         function testPush() {
             // 对象
             router.push({
-                path: '/'
+                path: '/login/name'
             })
         }
 
