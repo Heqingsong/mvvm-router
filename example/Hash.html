@@ -10,18 +10,18 @@
     <br/>
     <a href="#/login">login</a>
     <br/>
-    <a href="#/login/name">login/name</a>
+    <a href="#/login/admin">login/admin</a>
     <br/>
-    <a href="#/login/name2">login/name2</a>
+    <a href="#/login/user">login/user</a>
     <br/>
-    <a href="#/login/name2/name3">login/name2/name3</a>
+    <a href="#/login/user/info">login/user/info</a>
     <br/>
-    <a href="#/register">login/name</a>
+    <a href="#/register">register</a>
     <br />
     <button onclick="testPush()">测试代码跳转</button>
 
     <div id="template"></div>
-    <div id="loginWrap2"></div>
+    <div id="children1"></div>
 
     <script type="text/javascript" src="../router.js"></script>
     <script type="text/javascript">
@@ -43,21 +43,21 @@
                         template: `<h1>login</h1>`
                     },
                     children: [{
-                        path: 'name',
+                        path: 'admin',
                         component: {
                             template: `<h1>main</h1>`
                         }
                     }, {
-                        path: 'name2',
+                        path: 'user',
                         component: {
-                            id: 'loginWrap2',
-                            template: `<h1>loginWrap2</h1><div id='loginWrap3'></div>`
+                            id: 'children1',
+                            template: `<h1>children -> children</h1><div id='userInfo'></div>`
                         },
                         children: [{
-                            path: 'name3',
+                            path: 'info',
                             component: {
-                                id: 'loginWrap3',
-                                template: `<h1>loginWrap3</h1>`
+                                id: 'userInfo',
+                                template: `<h1>children -> children -> children</h1>`
                             }
                         }]
                     }]
@@ -76,15 +76,9 @@
         function testPush() {
             // 对象
             router.push({
-                path: '/login/name'
+                path: '/login/admin'
             })
         }
-
-        // TODO 
-        // // 命名的路由
-        // router.push({ name: 'user', params: { userId: 123 }})
-        // // 带查询参数，变成 /register?plan=private
-        // router.push({ path: 'register', query: { plan: 'private' }})
     </script>
 </body>
 

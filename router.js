@@ -100,10 +100,10 @@
         },
 
         replaceHash: path => {
-            window.location.replace(this.getUrl(path))
+            window.location.replace(this.getHashUrl(path))
         },
 
-        getUrl: path => {
+        getHashUrl: path => {
             const href = window.location.href;
             const i = href.indexOf('#');
             const base = i >= 0 ? href.slice(0, i) : href;
@@ -114,10 +114,14 @@
             let dom = document.getElementById(id);
 
             if (dom) {
-                dom.innerHTML = template;
+                if ('string' !== typeof template) {
+                    dom.appendChild(template);
+                } else {
+                    dom.innerHTML = template;
+                }
                 callback();
             } else {
-                console.error('id未找到');
+                console.error('容器id未找到');
             }
         }
     }
@@ -247,7 +251,7 @@
     function Router(params) {
 
         if ('undefined' === typeof params) {
-            console.warn('required params');
+            console.warn('请传递基本参数信息！');
             return
         }
 
@@ -272,6 +276,7 @@
     }
 
     Router.prototype = {
+
         /**
          * 替换掉当前的history记录
          * @params {string} url
@@ -290,14 +295,6 @@
 
         forward: function() {
             this.go(1);
-        },
-
-        beforeEach: () => {
-            // before
-        },
-
-        afterEach: () => {
-            // after
         },
 
         onReady: function(successCallBack, errorCallBack) {
