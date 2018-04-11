@@ -185,10 +185,7 @@
             if (!/^\/#/.test(location)) {
                 window.location.replace(util.cleanPath(this.base + '/#' + location))
             }
-            this.registerListen();
-        },
 
-        registerListen: function() {
             window.addEventListener('hashchange', () => {
                 this.listen();
             });
