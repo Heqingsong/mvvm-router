@@ -45,18 +45,18 @@
             object.forEach(item => {
                 let router = key;
                 if ("object" === typeof item.component) {
-                    let item = {
+                    let routerItem = {
                         id: '',
                         template: '',
                         before: function() {},
                         after: function() {}
                     }
 
-                    item.id = item.component.id || 'template';
-                    item.template = item.component.template;
+                    routerItem.id = item.component.id || 'template';
+                    routerItem.template = item.component.template;
 
-                    'function' === typeof item.component.beforeRouteUpdate ? item.before = item.component.beforeRouteUpdate : '';
-                    'function' === typeof item.component.afterRouteUpdate ? item.after = item.component.afterRouteUpdate : '';
+                    'function' === typeof item.component.beforeRouteUpdate ? routerItem.before = item.component.beforeRouteUpdate : '';
+                    'function' === typeof item.component.afterRouteUpdate ? routerItem.after = item.component.afterRouteUpdate : '';
 
                     if (item.path.charAt(item.path.length - 1) !== '/' && router.charAt(router.length - 1) !== '/') {
                         router = `${key}/${item.path}`;
@@ -66,7 +66,7 @@
                         router = `${item.path}`
                     }
 
-                    _router[router] = item;
+                    _router[router] = routerItem;
                 }
 
                 if (item.hasOwnProperty('children') && item.children.length) {
