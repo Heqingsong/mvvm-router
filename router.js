@@ -184,9 +184,9 @@
         },
 
         listen: function() {
-            let url = location.hash.split('#')[1];
+            let url = `${this.base}${location.hash.split('#')[1]}`;
 
-            if (_router.hasOwnProperty(`${this.base}${url}`)) {
+            if (_router.hasOwnProperty(url)) {
                 let item = _router[url];
                 item.before();
                 util.render(item.id, item.template, item.after)
