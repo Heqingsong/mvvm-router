@@ -184,8 +184,14 @@
             const location = util.getLocation(this.base)
             if (!/^\/#/.test(location)) {
                 window.location.replace(util.cleanPath(this.base + '/#' + location))
+                this.listen();
+                this.registerListen();
+            } else {
+                this.registerListen();
             }
+        },
 
+        registerListen: function() {
             ['load', 'hashchange'].map(item => {
                 window.addEventListener(item, () => {
                     this.listen();
