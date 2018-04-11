@@ -2,29 +2,7 @@
     var _router = {};
     var util = {
         getParamsUrl: mode => {
-            // var hashDeatail = location.hash.split("?"),
-            // 	hashName = hashDeatail[0].split("#")[1],//路由地址
-            // 	params = hashDeatail[1] ? hashDeatail[1].split("&") : [],//参数内容
-            // 	query = {};
-            // for(var i = 0;i<params.length ; i++){
-            // 	var item = params[i].split("=");
-            // 	query[item[0]] = item[1]
-            // }
-            // return 	{
-            // 	path:hashName,
-            // 	query:query
-            // }
-
-            // www.aa.com/#/login
-            // www.aa.com/#/list/1
-            let url = location.href.replace(/^[^?=]*\?/ig, '').split('#')[0];
-
-            if (mode === 'history') {
-
-            }
-
-            url = location.hash; // #/login
-
+            // TODO
         },
 
         pushState: function(url, replace) {
