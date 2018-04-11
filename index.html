@@ -37,18 +37,25 @@
         <h1 class="index-tipsy">我是使用template标签定义的首页，哈哈~</h1>
     </template>
 
+    <template id="register">
+            <h1 class="register-tipsy">我是注册页面耶~~</h1>
+        </template>
+
     <div id="template"></div>
     <div id="children1"></div>
 
     <script type="text/javascript" src="router.js"></script>
     <script type="text/javascript">
+        var IndexComponent = document.getElementById('index').content;
+        var LoginComponent = document.querySelector('link[rel=import]').import.querySelector('body').children[0];
+        var RegisterComponent = document.getElementById('register').content;
+
         let router = new Router({
             base: '/qs-router',
             routes: [{
                 path: '/',
                 component: {
-                    // 故意这样写，测试直接使用当前页面模板的情况
-                    template: document.getElementById('index').content.cloneNode(true),
+                    template: IndexComponent,
                     beforeRouteUpdate: params => {
                         console.log('开始执行');
                     },
@@ -59,8 +66,7 @@
                 children: [{
                     path: 'login',
                     component: {
-                        // 故意这样写，测试导入外部模板的情况
-                        template: document.querySelector('link[rel=import]').import.querySelector('body').children[0]
+                        template: LoginComponent
                     },
                     children: [{
                         path: 'admin',
@@ -84,7 +90,7 @@
                 }, {
                     path: 'register',
                     component: {
-                        template: `<h1>register</h1>`
+                        template: RegisterComponent
                     }
                 }]
             }]
