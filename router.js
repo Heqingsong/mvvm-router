@@ -32,7 +32,7 @@
 
         map: (object, key) => {
             object.forEach(item => {
-                let router = key;
+                let router = key || '/';
                 if ("object" === typeof item.component) {
                     let object = {
                         id: '',
@@ -249,7 +249,7 @@
                 break;
         }
 
-        util.map(this.routes, this.base);
+        util.map(this.routes);
         this.history.init();
     }
 
