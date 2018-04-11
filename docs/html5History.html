@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>qs-router</title>
+    <base href="/">
+</head>
+
+<body>
+    <h1>html5History模式</h1>
+    <br/>
+    <a href="/login">login</a>
+    <br/>
+    <a href="/login/admin">login/admin</a>
+    <br/>
+    <a href="/login/user">login/user</a>
+    <br/>
+    <a href="/login/user/info">login/user/info</a>
+    <br/>
+    <a href="/register">register</a>
+    <br />
+    <button onclick="testPush()">测试代码跳转</button>
+
+    <div id="template"></div>
+    <div id="children1"></div>
+
+    <script type="text/javascript" src="router.js"></script>
+    <script type="text/javascript">
+        let router = new Router({
+            // base: '/',
+            type: 'history',
+            routes: [{
+                path: '/',
+                component: {
+                    template: `<h1>hello word</h1>`,
+                    beforeRouteUpdate: params => {
+                        console.log('开始执行');
+                    },
+                    afterRouteUpdate: params => {
+                        console.log('执行结束');
+                    }
+                },
+                children: [{
+                    path: 'login',
+                    component: {
+                        template: `<h1>login</h1>`
+                    },
+                    children: [{
+                        path: 'admin',
+                        component: {
+                            template: `<h1>main</h1>`
+                        }
+                    }, {
+                        path: 'user',
+                        component: {
+                            id: 'children1',
+                            template: `<h1>login -> user</h1><div id='children2'></div>`
+                        },
+                        children: [{
+                            path: 'info',
+                            component: {
+                                id: 'children2',
+                                template: `<h1>login -> user -> info</h1>`
+                            }
+                        }]
+                    }]
+                }, {
+                    path: 'register',
+                    component: {
+                        template: `<h1>register</h1>`
+                    }
+                }]
+            }]
+        });
+
+        // 字符串
+        router.push('/login');
+
+        function testPush() {
+            // 对象
+            router.push({
+                path: '/login/admin'
+            })
+        }
+    </script>
+</body>
+
+</html>
