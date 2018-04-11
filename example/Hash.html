@@ -3,32 +3,30 @@
 
 <head>
     <title>qs-router</title>
-    <base href="/">
 </head>
 
 <body>
-    <h1>html5History模式</h1>
+    <h1>hash模式</h1>
     <br/>
-    <a href="/login">login</a>
+    <a href="#/login">login</a>
     <br/>
-    <a href="/login/admin">login/admin</a>
+    <a href="#/login/admin">login/admin</a>
     <br/>
-    <a href="/login/user">login/user</a>
+    <a href="#/login/user">login/user</a>
     <br/>
-    <a href="/login/user/info">login/user/info</a>
+    <a href="#/login/user/info">login/user/info</a>
     <br/>
-    <a href="/register">register</a>
+    <a href="#/register">register</a>
     <br />
     <button onclick="testPush()">测试代码跳转</button>
 
     <div id="template"></div>
     <div id="children1"></div>
 
-    <script type="text/javascript" src="router.js"></script>
+    <script type="text/javascript" src="../router.js"></script>
     <script type="text/javascript">
         let router = new Router({
-            // base: '/',
-            type: 'history',
+            base: '/qs-router/docs/',
             routes: [{
                 path: '/',
                 component: {
@@ -54,13 +52,13 @@
                         path: 'user',
                         component: {
                             id: 'children1',
-                            template: `<h1>login -> user</h1><div id='children2'></div>`
+                            template: `<h1>children -> children</h1><div id='userInfo'></div>`
                         },
                         children: [{
                             path: 'info',
                             component: {
-                                id: 'children2',
-                                template: `<h1>login -> user -> info</h1>`
+                                id: 'userInfo',
+                                template: `<h1>children -> children -> children</h1>`
                             }
                         }]
                     }]
@@ -74,7 +72,7 @@
         });
 
         // 字符串
-        router.push('/login');
+        // router.push('/login');
 
         function testPush() {
             // 对象
