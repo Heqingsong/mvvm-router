@@ -235,7 +235,7 @@
 
         let mode = params.hasOwnProperty('type') ? params.type : 'hash';
 
-        this.base = '/';
+        this.base = params.hasOwnProperty('base') ? params.base : '/';
         this.routes = params.hasOwnProperty('routes') ? params.routes : [];
         this.mode = mode;
 
