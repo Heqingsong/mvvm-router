@@ -46,7 +46,7 @@
 
     <script type="text/javascript" src="router.js"></script>
     <script type="text/javascript">
-        var IndexComponent = document.getElementById('index').content;
+        var IndexComponent = document.getElementById('index').content.cloneNode(true);
         var LoginComponent = document.querySelector('link[rel=import]').import.querySelector('body').children[0];
         var RegisterComponent = document.getElementById('register').content;
 
