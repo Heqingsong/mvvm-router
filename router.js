@@ -186,7 +186,7 @@
         listen: function() {
             let url = location.hash.split('#')[1];
 
-            if (_router.hasOwnProperty(url)) {
+            if (_router.hasOwnProperty(`${this.base}${url}`)) {
                 let item = _router[url];
                 item.before();
                 util.render(item.id, item.template, item.after)
