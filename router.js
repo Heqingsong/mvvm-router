@@ -184,6 +184,8 @@
             const location = util.getLocation(this.base)
             if (!/^\/#/.test(location)) {
                 window.location.replace(util.cleanPath(this.base + '/#' + location))
+            } else {
+                this.listen();
             }
 
             window.addEventListener('hashchange', () => {
