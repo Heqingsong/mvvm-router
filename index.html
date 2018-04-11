@@ -48,7 +48,7 @@
                 path: '/',
                 component: {
                     // 故意这样写，测试直接使用当前页面模板的情况
-                    template: document.getElementById('index').content,
+                    template: document.getElementById('index').content.cloneNode(true),
                     beforeRouteUpdate: params => {
                         console.log('开始执行');
                     },
@@ -60,7 +60,7 @@
                     path: 'login',
                     component: {
                         // 故意这样写，测试导入外部模板的情况
-                        template: document.querySelector('link[rel=import]').import.querySelector('body').children
+                        template: document.querySelector('link[rel=import]').import.querySelector('body').children[0]
                     },
                     children: [{
                         path: 'admin',
