@@ -192,10 +192,8 @@
         },
 
         registerListen: function() {
-            ['load', 'hashchange'].map(item => {
-                window.addEventListener(item, () => {
-                    this.listen();
-                });
+            window.addEventListener('hashchange', () => {
+                this.listen();
             });
         },
 
