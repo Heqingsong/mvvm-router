@@ -5,6 +5,11 @@
             // TODO
         },
 
+        /**
+         * history模式更改状态
+         * @params {string} url - 需要更改的url
+         * @params {boolen} replace - 区分是替换还是新增的方式
+         */
         pushState: function(url, replace) {
             const history = window.history;
 
@@ -25,27 +30,33 @@
             window.location.hash = hash;
         },
 
+        // 生成一个唯一KEY
         getKey: () => {
             const Time = window.performance && window.performance.now ? window.performance : Date;
             return parseInt(Time.now());
         },
 
+        /**
+         * 根据用户配置生成路由映射map
+         * @params {object} object - 用户配置的路由信息对象
+         * @params {string} key - 二级路径 
+         */
         map: (object, key) => {
             object.forEach(item => {
                 let router = key;
                 if ("object" === typeof item.component) {
-                    let object = {
+                    let item = {
                         id: '',
                         template: '',
                         before: function() {},
                         after: function() {}
                     }
 
-                    object.id = item.component.id || 'template';
-                    object.template = item.component.template;
+                    item.id = item.component.id || 'template';
+                    item.template = item.component.template;
 
-                    'function' === typeof item.component.beforeRouteUpdate ? object.before = item.component.beforeRouteUpdate : '';
-                    'function' === typeof item.component.afterRouteUpdate ? object.after = item.component.afterRouteUpdate : '';
+                    'function' === typeof item.component.beforeRouteUpdate ? item.before = item.component.beforeRouteUpdate : '';
+                    'function' === typeof item.component.afterRouteUpdate ? item.after = item.component.afterRouteUpdate : '';
 
                     if (item.path.charAt(item.path.length - 1) !== '/' && router.charAt(router.length - 1) !== '/') {
                         router = `${key}/${item.path}`;
@@ -55,7 +66,7 @@
                         router = `${item.path}`
                     }
 
-                    _router[router] = object;
+                    _router[router] = item;
                 }
 
                 if (item.hasOwnProperty('children') && item.children.length) {
@@ -88,6 +99,12 @@
             return `${base}#${path}`;
         },
 
+        /**
+         * 渲染函数
+         * @params {string} id - 容器id
+         * @params {string} template - 模板内容
+         * @params {function} callback - 回调函数
+         */
         render: (id, template, callback) => {
             let dom = document.getElementById(id);
 
@@ -139,14 +156,6 @@
             } else {
                 console.warn('请传入正确的值！');
             }
-        },
-
-        onReady: (successCallBack, errorCallBack) => {
-
-        },
-
-        onError: callback => {
-
         },
 
         push: function(params) {
@@ -201,14 +210,6 @@
             util.replaceHash(url);
         },
 
-        onReady: (successCallBack, errorCallBack) => {
-
-        },
-
-        onError: callback => {
-
-        },
-
         push: params => {
             if ('string' === typeof params) {
                 util.pushHash(params);
@@ -224,6 +225,7 @@
     }
 
     /**
+     * qs-router 路由根对象
      * @params {Object} - Router
      */
     function Router(params) {
@@ -249,6 +251,7 @@
                 break;
         }
 
+        // 开始初始化路由映射
         util.map(this.routes, this.base);
         this.history.init();
     }
@@ -257,12 +260,16 @@
 
         /**
          * 替换掉当前的history记录
-         * @params {string} url
+         * @params {string} url - 需要替换的URL
          */
         replace: function(url) {
             this.history.replace(url, true);
         },
 
+        /**
+         * 跳转到目标id
+         * @params {number} index - 需要跳转到的目标索引
+         */
         go: function(index) {
             this.history.go(index);
         },
@@ -275,14 +282,11 @@
             this.go(1);
         },
 
-        onReady: function(successCallBack, errorCallBack) {
-            this.history.onReady(successCallBack, errorCallBack);
-        },
-
-        onError: function(callback) {
-            this.history.onError(callback);
-        },
-
+        /**
+         * 通过JS的方式跳转到目标页面
+         * '/' 或者 {path: '/'}
+         * @params {object | string} params - 传入的跳转的参数
+         */
         push: function(params) {
             this.history.push(params);
         }
