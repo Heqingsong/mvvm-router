@@ -3,6 +3,7 @@
 
 <head>
     <title>qs-router</title>
+    <link rel="import" href="components/header.html" />
 </head>
 
 <body>
@@ -20,6 +21,10 @@
     <br />
     <button onclick="testPush()">测试代码跳转</button>
 
+    <template id="index">
+        <h1>我是首页，哈哈~</h1>
+    </template>
+
     <div id="template"></div>
     <div id="children1"></div>
 
@@ -30,7 +35,8 @@
             routes: [{
                 path: '/',
                 component: {
-                    template: `<h1>hello word</h1>`,
+                    // 故意这样写，测试直接使用当前页面模板的情况
+                    template: document.getElementById('index').content,
                     beforeRouteUpdate: params => {
                         console.log('开始执行');
                     },
