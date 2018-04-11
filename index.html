@@ -2,8 +2,20 @@
 <html>
 
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0,user-scalable=no,minimal-ui">
     <title>qs-router</title>
-    <link rel="import" href="components/header.html" />
+
+    <link rel="import" href="components/login.html" />
+    <style type="text/css">
+        .index-tipsy {
+            color: green;
+        }
+        
+        .login {
+            color: #FF0000;
+        }
+    </style>
+
 </head>
 
 <body>
@@ -22,7 +34,7 @@
     <button onclick="testPush()">测试代码跳转</button>
 
     <template id="index">
-        <h1>我是首页，哈哈~</h1>
+        <h1 class="index-tipsy">我是使用template标签定义的首页，哈哈~</h1>
     </template>
 
     <div id="template"></div>
@@ -47,7 +59,8 @@
                 children: [{
                     path: 'login',
                     component: {
-                        template: `<h1>login</h1>`
+                        // 故意这样写，测试导入外部模板的情况
+                        template: document.querySelector('link[rel=import]').import.querySelector('body').children
                     },
                     children: [{
                         path: 'admin',

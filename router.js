@@ -110,6 +110,7 @@
 
             if (dom) {
                 if ('string' !== typeof template) {
+                    dom.innerHTML = '';
                     dom.appendChild(template);
                 } else {
                     dom.innerHTML = template;
