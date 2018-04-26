@@ -83,29 +83,18 @@
          * @params {string} query - URL参数字符串
          */
         parseQuery: query => {
-            const result = {};
+            var reg = /([^=&\s]+)[=\s]*([^&\s]*)/g;
+            var obj = {};
 
-            query = query.trim().replace(/^(\?|#|&)/, '');
-
-            if (!query) {
-                return result;
+            // 如果没有?就直接忽略当前传入的字符串
+            if (query.indexOf('?') > -1) {
+                query = query.split('?')[1];
+                while (reg.exec(query)) {
+                    obj[RegExp.$1] = RegExp.$2;
+                }
             }
 
-            query.split('&').forEach(param => {
-                const parts = param.replace(/\+/g, ' ').split('=');
-                const key = decodeURIComponent(parts.shift());
-                const val = parts.length > 0 ? decodeURIComponent(parts.join('=')) : null;
-
-                if (result[key] === undefined) {
-                    result[key] = val;
-                } else if (Array.isArray(result[key])) {
-                    result[key].push(val);
-                } else {
-                    result[key] = [result[key], val];
-                }
-            });
-
-            return result;
+            return obj;
         },
 
         /**
@@ -469,7 +458,7 @@
                 // 带查询参数，变成 /register?plan=private
                 // router.push({ path: 'register', query: { plan: 'private' }})
                 if (params.hasOwnProperty('query')) {
-                    query = `?${this.util.param(params.query)}`;
+                    query = `?${util.param(params.query)}`;
                 }
 
                 util.pushHash(`${params.path}${query}`);
