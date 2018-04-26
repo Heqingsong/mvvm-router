@@ -97,12 +97,16 @@
         });
 
         // 字符串
-        // router.push('/login');
+        // router.push(`/login/${id}`);
 
         function testPush() {
             // 对象
             router.push({
-                path: '/login/admin'
+                path: '/login/admin',
+                query: {
+                    'id': 1,
+                    'name': 'test'
+                }
             })
         }
     </script>

@@ -1,8 +1,253 @@
 (function() {
     var _router = {};
+
+    /*
+    
+    qs-router-link
+
+    无论是 HTML5 history 模式还是 hash 模式，它的表现行为一致，所以，当你要切换路由模式，或者在 IE9 降级使用 hash 模式，无须作任何变动。
+
+    在 HTML5 history 模式下，router-link 会守卫点击事件，让浏览器不再重新加载页面。
+
+    当你在 HTML5 history 模式下使用 base 选项之后，所有的 to 属性都不需要写（基路径）了。
+    
+    */
     var util = {
         getParamsUrl: mode => {
             // TODO
+            // /
+            // /user/:username/post/:post_id	/user/evan/post/123	{ username: 'evan', post_id: 123 }
+            // /foo?user=1
+
+        },
+
+        /**
+         * 序列化一个对象
+         * param({'a':1, 'b':2}) -----> a=1&b=2
+         * param({'result': () => { return 1 + 2; }}) -----> result=3
+         * param({ ids: [1,2,3] }) ------> ids=1&ids=2&ids=3 
+         * @params {object} obj - 需要序列化的对象
+         */
+        param: obj => {
+            var params = [];
+
+            params.add = function(key, value) {
+                if (typeof value === 'function') value = value();
+                if (value == null) value = "";
+                this.push(encodeURIComponent(key) + '=' + encodeURIComponent(value))
+            }
+
+            var foreach = function(elements, callback) {
+                var i, key
+                if (Array.isArray(elements)) {
+                    for (i = 0; i < elements.length; i++)
+                        if (callback.call(elements[i], i, elements[i]) === false) return elements;
+                } else {
+                    for (key in elements)
+                        if (callback.call(elements[key], key, elements[key]) === false) return elements;
+                }
+
+                return elements;
+            }
+
+            var serialize = function(params, obj, traditional, scope) {
+                var type,
+                    array = Array.isArray(obj),
+                    hash = Object.getPrototypeOf(obj) == Object.prototype;
+
+                foreach(obj, function(key, value) {
+                    type = toString.call(value);
+
+                    if (scope)
+                        key = traditional ? scope : scope + '[' + (hash || type == '[object Object]' || type == '[object Array]' ? key : '') + ']';
+
+                    if (!scope && array)
+                        params.add(value.name, value.value)
+                    else if (type == '[object Array]' || (!traditional && type == '[object Object]'))
+                        serialize(params, value, traditional, key)
+                    else
+                        params.add(key, value)
+                });
+
+            }
+
+            serialize(params, obj, true);
+
+            foreach = null;
+            serialize = null;
+            return params.join('&').replace(/%20/g, '+');
+        },
+
+        /**
+         * 转换URL参数为对象
+         * @params {string} query - URL参数字符串
+         */
+        parseQuery: query => {
+            const result = {};
+
+            query = query.trim().replace(/^(\?|#|&)/, '');
+
+            if (!query) {
+                return result;
+            }
+
+            query.split('&').forEach(param => {
+                const parts = param.replace(/\+/g, ' ').split('=');
+                const key = decodeURIComponent(parts.shift());
+                const val = parts.length > 0 ? decodeURIComponent(parts.join('=')) : null;
+
+                if (result[key] === undefined) {
+                    result[key] = val;
+                } else if (Array.isArray(result[key])) {
+                    result[key].push(val);
+                } else {
+                    result[key] = [result[key], val];
+                }
+            });
+
+            return result;
+        },
+
+        /**
+         * 根据传入的路径，返回参数列表
+         * @param {string} path - 源路径
+         * @param {string} url - 获取到的url
+         * @return {object} 参数列表
+         */
+        regExp: (path, url) => {
+            let keys = [];
+            let PATH_REGEXP = /(\\.)|(?:\:(\w+)(?:\(((?:\\.|[^\\()])+)\))?|\(((?:\\.|[^\\()])+)\))([+*?])?/g;
+
+            let escapeString = function(str) {
+                return str.replace(/([.+*?=^!:${}()[\]|/\\])/g, '\\$1');
+            }
+
+            /**
+             * 根据传入的参数返回匹配到的路径结果，用于生成匹配的正则表达式
+             * @param {string} str - 源路径
+             * @return {object} 匹配到的结果对象 
+             */
+            let parse = function(str) {
+                var tokens = []
+                var key = 0
+                var index = 0
+                var path = ''
+                var defaultDelimiter = './'
+                var delimiters = './'
+                var pathEscaped = false
+                var res
+
+                while ((res = PATH_REGEXP.exec(str)) !== null) {
+                    var m = res[0]
+                    var escaped = res[1]
+                    var offset = res.index
+                    path += str.slice(index, offset)
+                    index = offset + m.length
+
+                    if (escaped) {
+                        path += escaped[1]
+                        pathEscaped = true
+                        continue
+                    }
+
+                    var prev = ''
+                    var next = str[index]
+                    var name = res[2]
+                    var capture = res[3]
+                    var group = res[4]
+                    var modifier = res[5]
+
+                    if (!pathEscaped && path.length) {
+                        var k = path.length - 1
+
+                        if (delimiters.indexOf(path[k]) > -1) {
+                            prev = path[k]
+                            path = path.slice(0, k)
+                        }
+                    }
+
+                    if (path) {
+                        tokens.push(path)
+                        path = ''
+                        pathEscaped = false
+                    }
+
+                    var repeat = modifier === '+' || modifier === '*'
+                    var delimiter = prev || defaultDelimiter
+                    var pattern = capture || group
+                    var optional = modifier === '?' || modifier === '*'
+
+                    tokens.push({
+                        name: name || key++,
+                        prefix: prev,
+                        delimiter: delimiter,
+                        repeat: repeat,
+                        optional: optional,
+                        pattern: pattern ? escapeGroup(pattern) : '[^' + escapeString(delimiter) + ']+?'
+                    })
+                }
+
+                if (path || index < str.length) {
+                    tokens.push(path + str.substr(index))
+                }
+
+                return tokens
+            }
+
+            /**
+             * 根据传递的tokens对象返回匹配的正则表达式
+             * @param {object} tokens - 使用parse方法获取到的路径对象
+             * @param {array} keys - 传入的存储匹配到的路径key的值
+             * @return {regexp} 用于匹配的正则表达式
+             */
+            let tokensToRegExp = function(tokens, keys) {
+
+                var delimiter = escapeString('./')
+                var delimiters = './'
+                var route = ''
+                var isEndDelimited = false
+
+                for (var i = 0; i < tokens.length; i++) {
+                    var token = tokens[i]
+
+                    if (typeof token === 'string') {
+                        route += escapeString(token)
+                        isEndDelimited = i === tokens.length - 1 && delimiters.indexOf(token[token.length - 1]) > -1
+                    } else {
+                        var prefix = escapeString(token.prefix)
+                        var capture = token.repeat ?
+                            '(?:' + token.pattern + ')(?:' + prefix + '(?:' + token.pattern + '))*' :
+                            token.pattern
+
+                        if (keys) keys.push(token)
+
+                        if (token.optional) {
+                            if (token.partial) {
+                                route += prefix + '(' + capture + ')?'
+                            } else {
+                                route += '(?:' + prefix + '(' + capture + '))?'
+                            }
+                        } else {
+                            route += prefix + '(' + capture + ')'
+                        }
+                    }
+                }
+
+                return new RegExp('^' + route)
+            }
+
+            let pathValue = tokensToRegExp(parse(path), keys).exec(url);
+            let result = {};
+
+            if (pathValue) {
+                for (let i = 0; i < keys.length; i++) {
+                    result[keys[i].name] = pathValue[i + 1];
+                }
+            } else {
+                console.error(`源路径配置参数与URL传递参数个数不符！${path} -> ${url}`);
+            }
+
+            return result;
         },
 
         /**
@@ -194,6 +439,7 @@
         },
 
         listen: function() {
+            // TODO 处理URL带参数的情况 /aaa?aaa=b
             let url = `${this.base}${location.hash.split('#')[1]}`;
 
             if (_router.hasOwnProperty(url)) {
@@ -218,7 +464,15 @@
             }
 
             if (params.hasOwnProperty('path')) {
-                util.pushHash(params.path);
+                let query = '';
+
+                // 带查询参数，变成 /register?plan=private
+                // router.push({ path: 'register', query: { plan: 'private' }})
+                if (params.hasOwnProperty('query')) {
+                    query = `?${this.util.param(params.query)}`;
+                }
+
+                util.pushHash(`${params.path}${query}`);
             } else {
                 console.warn('请传入正确的数据结构');
             }
