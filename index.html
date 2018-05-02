@@ -31,15 +31,15 @@
     <br/>
     <a href="#/register">register</a>
     <br />
-    <button onclick="testPush()">测试代码跳转</button>
+    <button onclick="testPush()">测试用代码跳转，在控制台查看拿到的参数信息！</button>
 
     <template id="index">
         <h1 class="index-tipsy">我是使用template标签定义的首页，哈哈~</h1>
     </template>
 
     <template id="register">
-            <h1 class="register-tipsy">我是注册页面耶~~</h1>
-        </template>
+        <h1 class="register-tipsy">我是注册页面耶~~</h1>
+    </template>
 
     <div id="template"></div>
     <div id="children1"></div>
@@ -71,7 +71,11 @@
                     children: [{
                         path: 'admin',
                         component: {
-                            template: `<h1>main</h1>`
+                            template: `<h1>main</h1>`,
+                            afterRouteUpdate: params => {
+                                console.log('渲染结束，我拿到参数啦!');
+                                console.log(params);
+                            }
                         }
                     }, {
                         path: 'user',
