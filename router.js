@@ -86,9 +86,7 @@
             var reg = /([^=&\s]+)[=\s]*([^&\s]*)/g;
             var obj = {};
 
-            // 如果没有?就直接忽略当前传入的字符串
-            if (query.indexOf('?') > -1) {
-                query = query.split('?')[1];
+            if ('string' === typeof query) {
                 while (reg.exec(query)) {
                     obj[RegExp.$1] = RegExp.$2;
                 }
@@ -337,9 +335,10 @@
          * 渲染函数
          * @params {string} id - 容器id
          * @params {string} template - 模板内容
+         * @params {string} params - 传递的参数字符串 ?a=1&b=2 或者 a=1&b=2
          * @params {function} callback - 回调函数
          */
-        render: (id, template, callback) => {
+        render: (id, template, params, callback) => {
             let dom = document.getElementById(id);
 
             if (dom) {
@@ -349,7 +348,7 @@
                 } else {
                     dom.innerHTML = template;
                 }
-                callback();
+                callback(util.parseQuery(params));
             } else {
                 console.error('容器id未找到');
             }
@@ -376,7 +375,8 @@
             if (_router.hasOwnProperty(url)) {
                 let item = _router[url];
                 item.before();
-                util.render(item.id, item.template, item.after)
+                // TODO 需要传递参数列表
+                util.render(item.id, item.template, null, item.after)
             }
         },
 
@@ -428,13 +428,13 @@
         },
 
         listen: function() {
-            // TODO 处理URL带参数的情况 /aaa?aaa=b
-            let url = `${this.base}${location.hash.split('#')[1]}`;
+            let path = location.hash.split('#')[1].split('?');
+            let url = `${this.base}${path[0]}`;
 
             if (_router.hasOwnProperty(url)) {
                 let item = _router[url];
                 item.before();
-                util.render(item.id, item.template, item.after)
+                util.render(item.id, item.template, path[1], item.after)
             }
         },
 
