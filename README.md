@@ -1,6 +1,6 @@
-# qs-router
+# mvvm-router
 
-qs-router 是一个 基于 url hash 和 html5 history 的一个前端路由小轮子
+mvvm-router 是一个 基于 url hash 和 html5 history 的一个前端路由小轮子
 
 ## 使用方法
 
